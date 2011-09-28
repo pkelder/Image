@@ -22,6 +22,7 @@ public class image {
 		super();
 	}
 	
+	/*création d'un objet image à partir d'un fichier pgm*/
 	
 	public static image fill_img(String path) throws IOException
 	{
@@ -53,12 +54,81 @@ public class image {
 		return img;
 	}
 	
+	//création du tableau histogramme à partir de l'objet image
+	
+	public static int[]  histogramme(image img)
+	{
+		int lon=img.matrice_img.length;
+		int [][] mat=img.matrice_img;
+		int [] histo=new int[lon];
+		
+	for (int i=0;i<lon;i++){
+		for (int j=0;j<lon;j++)
+		{
+			int ent=mat[i][j];
+			histo[ent]=histo[ent]+1;
+		
+		}
+	}
+	System.out.println(histo[200]);
+		return histo;
+	}
+	
+	
+	
+	//création de l'histogramme sous forme de fichier pgm de chemin path à partir de l'histogramme lui même
+	
+	public static String HistoPGM(int[] histo,String path) throws IOException
+	{
+		File f=new File(path);
+		FileWriter fichier = new FileWriter(path );
+		fichier.write("P2"+"\n");
+		fichier.write("# CREATOR PAULINE KELDER TP OBJET"+"\n"); 
+		fichier.write(histo.length+" "+histo.length+"\n"); 
+		fichier.write("255"+"\n"); 
+		
+	     for (int i = 0; i < histo.length; i++){
+	    	 int ent=	histo[i];
+	    	 fichier.write(ent+"\n");
+	    	 
+	    	 }
+	     fichier.close();
+		return path;
+	}
+	
+	public static String seuillage(int seuil, String endpath,int[] histo) throws IOException
+	{
+		File f=new File(endpath);
+		FileWriter fichier = new FileWriter(endpath);
+		fichier.write("P2"+"\n");
+		fichier.write("# CREATOR PAULINE KELDER TP OBJET"+"\n"); 
+		fichier.write(histo.length+" "+histo.length+"\n"); 
+		fichier.write("255"+"\n"); 
+		
+	     for (int i = 0; i < histo.length; i++){
+	    	 int ent=histo[i];
+	    	 if (ent<seuil){
+	    	 fichier.write("0"+"\n");
+	    	 }
+	    	 else{
+	    		 fichier.write("255"+"\n");	 
+	    	 }
+	    	 }
+	     fichier.close();
+		return endpath;		
+	
+	}
+	
 	
 	
 	public static void main(String[] args) throws IOException{
 		
-		fill_img("/Users/loukelder/Desktop/lena512x512.pgm");
-	   
+		
+		image im=fill_img("/Users/loukelder/Desktop/lena512x512.pgm");
+		
+		HistoPGM(histogramme(im),"/Users/loukelder/Desktop/essai.txt");
+		
+		seuillage(125,"/Users/loukelder/Desktop/seuil.txt",histogramme(im));
 	
 	}
 	
